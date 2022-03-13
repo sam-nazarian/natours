@@ -94,4 +94,5 @@ app.all('*', (req, res, next) => {
 //global error middle-ware
 app.use(globalErrorHandler);
 
+//will be used in server
 module.exports = app;
