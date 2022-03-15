@@ -1,4 +1,5 @@
 //EXPRESS CODE RUNS IN THIS PAGE, ONLY HAS MIDDLEWARES
+const path = require('path'); //core module
 const express = require('express');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -12,8 +13,16 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
 const reviewRouter = require('./routs/reviewRoutes');
+const viewRouter = require('./routs/viewRoutes');
+
+app.set('view engine', 'pug'); //defining template engine
+app.set('views', path.join(__dirname, 'views')); //we don't know if given path will have a '/' or notwe don't know if given path will have a '/' or not
 
 // 1) GLOBAL MIDDLEWARES
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(`${__dirname}/public`));
+
 // Set Security HTTP headers
 app.use(helmet());
 
@@ -46,9 +55,6 @@ app.use(mongoSanitize()); //needs to be after express.json
 // Date sanitization against XSS (malicious scripts)
 app.use(xss());
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 // Prevent parameter pollition
 // duplicates in query string, become array
 app.use(
@@ -73,6 +79,8 @@ app.use((req, res, next) => {
 // ROUTS
 //for this routes/url's use the routers
 //route = url, router is object, that has a route as a property
+
+app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter); //this middleware only happens in this url, (we call this mounting)
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
