@@ -12,6 +12,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+var cookieParser = require('cookie-parser');
 const reviewRouter = require('./routs/reviewRoutes');
 const viewRouter = require('./routs/viewRoutes');
 
@@ -49,6 +50,8 @@ middleware is a step the requests go through. data from the 'body' is added to t
 // Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //body must be under 10kb
 
+//parsers data from cookie
+app.use(cookieParser());
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize()); //needs to be after express.json
 
@@ -73,6 +76,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   // console.log(req.headers);
+  console.log(req.cookies);
   next();
 });
 

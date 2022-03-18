@@ -79,6 +79,12 @@ userSchema.pre('save', function(next) {
   next();
 });
 
+/**
+ *
+ * @param {string} candidatePassword Pass given by user(regular string)
+ * @param {string} userPassword pass stored in DB(hashed)
+ * @returns
+ */
 userSchema.methods.correctPassword = async function(candidatePassword, userPassword) {
   //password select is false so we can't select it, so param is neeed
   //compares data to hash
@@ -91,10 +97,11 @@ userSchema.methods.changedPasswordAfter = function(JWTTimestamp) {
     // console.log(JWTTimestamp, changedTimestamp);
 
     //JWTTimestamp is iat(token issued at date)
+    //returns a true or false
     return JWTTimestamp < changedTimestamp; //10, 100
   }
 
-  return false;
+  return false; //pass was never changed
 };
 
 userSchema.methods.createPasswordReset = function() {

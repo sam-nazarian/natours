@@ -25,13 +25,15 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
+  //cookie here has nothing to do with cookie-parser
   const cookieOptions = {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
     // secure: true, //HTTPS
     httpOnly: true //cookie can't be accesed or modiefied by browser
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //add secure=true to cookieOptions
 
+  //send token to cookie with these options
   res.cookie('jwt', token, cookieOptions);
 
   // Remove Password from output
@@ -85,7 +87,7 @@ exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: email }).select('+password'); //also show password
   // console.log(user);
 
-  //password is UserPassword, user.password is DB password
+  //password is UserPassword(password given by user), user.password is DB password(coming from user model)
   //if password NOT correct[assume default of correct/true]
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
@@ -109,9 +111,16 @@ exports.login = catchAsync(async (req, res, next) => {
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
   let token;
+  //jwt will be added to headers, this will be used for testing in POSTMAN
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
+    //jwt in cookie, this will be used for testing in browser, jwt because we made a cookie named jwt when logging in
+    //we need cookie-parser to get cookies from browser, but not to write cookies
+  } else if (req.cookies.jwt) {
+    //authenticate users send by cookies & not only via authorization header
+    token = req.cookies.jwt;
   }
+
   if (!token) {
     return next(new AppError('You are not logged in! Please log in to get access.', 401));
   }
@@ -122,13 +131,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   // console.log(decoded);
 
   // 3) Check if user still exists,(user may have been deleted)
+  //cause we signed via '_id' we get id from decoded
   const freshUser = await User.findById(decoded.id);
   if (!freshUser) {
     return next(new AppError('The user belonging to this token no longer exist.', 401));
   }
 
   // 4) Check if user changes password after the token was issued (hacker could have user's token but user may have changed password)
-
+  //iat is time JWT was issued at
   if (freshUser.changedPasswordAfter(decoded.iat)) {
     return next(new AppError('User recently changed password! Please log in again.', 401));
   }
@@ -137,6 +147,35 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = freshUser; //might be usefull in future
   // console.log(req.user);
   next();
+});
+
+// Only for rendered pages, no errors!
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  // 1) Getting token and check of it's there
+  if (req.cookies.jwt) {
+    let token = req.cookies.jwt;
+
+    // 2) Verification token
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+    // 3) Check if user still exists,(user may have been deleted)
+    //cause we signed via '_id' we get id from decoded
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+
+    // 4) Check if user changes password after the token was issued (hacker could have user's token but user may have changed password)
+    //iat is time JWT was issued at
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    // THERE IS A LOGGED IN USER
+    res.locals.user = currentUser;
+    return next();
+  }
+  return next();
 });
 
 //happends after protection

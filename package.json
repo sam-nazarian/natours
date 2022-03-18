@@ -3,17 +3,22 @@
   "version": "1.0.0",
   "description": "Learning node, express and mongoDB",
   "main": "app.js",
+  "targets": {
+    "main": false
+  },
   "scripts": {
     "start": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
     "debug": "ndb server.js",
     "delete-data": "NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --delete",
-    "import-data": "NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --import"
+    "import-data": "NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --import",
+    "watch:js": "parcel serve ./public/js/index.js --dist-dir ./public/js/bundled"
   },
   "author": "Saman Fathnazarian",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
     "express-mongo-sanitize": "^2.2.0",
@@ -39,6 +44,7 @@
     "eslint-plugin-node": "8.0.1",
     "eslint-plugin-prettier": "3.0.1",
     "eslint-plugin-react": "7.12.4",
+    "parcel": "^2.3.2",
     "prettier": "1.17.0"
   },
   "engines": {
