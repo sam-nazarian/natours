@@ -1,7 +1,12 @@
 /* eslint-disable */
 
-const login = async (email, password) => {
-  // console.log(email, password);
+import axios from 'axios';
+import { showAlert } from './alerts';
+// const axios = require('axios');
+
+export const login = async (email, password) => {
+  console.log(email, password);
+
   try {
     const res = await axios({
       method: 'POST',
@@ -15,7 +20,7 @@ const login = async (email, password) => {
     // console.log(res); //prints 200 message
     //res has an object called data, all data's from api are hold there
     if (res.data.status === 'success') {
-      alert('Logged in successfully!');
+      showAlert('success', 'Logged in successfully!');
 
       //immediately go to homePage
       location.assign('/');
@@ -26,15 +31,8 @@ const login = async (email, password) => {
       // }, 1500);
     }
   } catch (err) {
-    alert(err.response.data.message);
+    showAlert('error', err.response.data.message);
     // console.log(err.response.data); //can be found in axios documentation, displays our api's errors
   }
   // console.log(eres);
 };
-
-document.querySelector('.form').addEventListener('submit', (e) => {
-  e.preventDefault(); //prevent form to load any other page
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  login(email, password);
-});
