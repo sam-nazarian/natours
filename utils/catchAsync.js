@@ -8,6 +8,6 @@ module.exports = catchAsync = (fn) => {
     //has access to fn function because of closures
 
     //calling fn, if rejected promise, we go catch (removes need for try/catch)
-    fn(reqd, resd, nextd).catch((err) => nextd(err));
+    fn(reqd, resd, nextd).catch((err) => nextd(err)); //sends error to global handing middleware
   };
 };

@@ -108,6 +108,14 @@ exports.login = catchAsync(async (req, res, next) => {
   // });
 });
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() - 10 * 1000), //10 sec before from now (1000 millisec in 1 sec) this deletes cookie
+    httpOnly: true //cookie can't be accesed or modiefied by browser
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
   let token;
@@ -150,33 +158,37 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 // Only for rendered pages, no errors!
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
   // 1) Getting token and check of it's there
   if (req.cookies.jwt) {
-    let token = req.cookies.jwt;
+    try {
+      let token = req.cookies.jwt;
 
-    // 2) Verification token
-    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+      // 2) Verification token
+      const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET); //if token is not in correct format this will throw an error
 
-    // 3) Check if user still exists,(user may have been deleted)
-    //cause we signed via '_id' we get id from decoded
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
+      // 3) Check if user still exists,(user may have been deleted)
+      //cause we signed via '_id' we get id from decoded
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+
+      // 4) Check if user changes password after the token was issued (hacker could have user's token but user may have changed password)
+      //iat is time JWT was issued at
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // THERE IS A LOGGED IN USER
+      res.locals.user = currentUser;
       return next();
+    } catch (err) {
+      return next(); //if there's an err, just go next middleware, don't show error
     }
-
-    // 4) Check if user changes password after the token was issued (hacker could have user's token but user may have changed password)
-    //iat is time JWT was issued at
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
-
-    // THERE IS A LOGGED IN USER
-    res.locals.user = currentUser;
-    return next();
   }
   return next();
-});
+};
 
 //happends after protection
 exports.restrictTo = (...roles) => {

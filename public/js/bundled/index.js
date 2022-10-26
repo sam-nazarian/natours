@@ -148,6 +148,7 @@ var _login = require("./login");
 //DOM ELEMENTS
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form');
+const logOutBtn = document.querySelector('.nav__el--logout');
 // DELEGATIONS
 if (mapBox) {
     // whatever we put into a data attribute like this (data-locations=''), will then get stored into the dataset property,
@@ -161,6 +162,7 @@ if (loginForm) loginForm.addEventListener('submit', (e)=>{
     const password = document.getElementById('password').value;
     _login.login(email, password);
 });
+if (logOutBtn) logOutBtn.addEventListener('click', _login.logout);
 
 },{"./mapbox":"3zDlz","./login":"7yHem"}],"3zDlz":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -240,6 +242,8 @@ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "login", ()=>login
 );
+parcelHelpers.export(exports, "logout", ()=>logout
+);
 /* eslint-disable */ var _axios = require("axios");
 var _axiosDefault = parcelHelpers.interopDefault(_axios);
 var _alerts = require("./alerts");
@@ -270,6 +274,18 @@ const login = async (email, password)=>{
     // console.log(err.response.data); //can be found in axios documentation, displays our api's errors
     }
 // console.log(eres);
+};
+const logout = async ()=>{
+    try {
+        const res = await _axiosDefault.default({
+            method: 'GET',
+            url: 'http://127.0.0.1:3000/api/v1/users/logout'
+        });
+        res.data.status = 'success';
+        location.reload(true);
+    } catch (err) {
+        _alerts.showAlert('error', 'Error loggi9ng out! Try again.');
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","axios":"jo6P5","./alerts":"6Mcnf"}],"jo6P5":[function(require,module,exports) {
