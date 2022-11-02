@@ -46,6 +46,7 @@ reviewSchema.pre(/^find/, function(next) {
   //   path: 'tour',
   //   select: '-guides name'
   // })
+
   this.populate({
     path: 'user',
     select: 'name photo'
@@ -55,13 +56,14 @@ reviewSchema.pre(/^find/, function(next) {
   next();
 });
 
+//statics adds it to the Review model
 reviewSchema.statics.calcAverageRatings = async function(tourId) {
   //'this' points to current model(Review) cause used statics
   const stats = await this.aggregate([
     {
       $match: { tour: tourId } //select the tour that user updated
     },
-    {
+    { //columns that the match will have
       $group: {
         _id: '$tour',
         nRating: { $sum: 1 }, //for each review 1 will be added

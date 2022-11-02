@@ -23,6 +23,7 @@ exports.deleteOne = (Model) => {
   });
 };
 
+// dont use this to change password
 exports.updateOne = (Model) => {
   return catchAsync(async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(
@@ -96,7 +97,7 @@ exports.getOne = (Model, popOptions) => {
 };
 
 exports.getAll = (Model) => {
-  return (exports.getAllTours = catchAsync(async (req, res, next) => {
+  return catchAsync(async (req, res, next) => {
     //for getAllReviews in review route (small hack)
     //allows nested GET reviews on tour
     let filter = {}; //empty filter searches for everything
@@ -134,7 +135,7 @@ exports.getAll = (Model) => {
     //     //err.message
     //   });
     // }
-  }));
+  });
 };
 
 /* exports.deleteTour = catchAsync(async (req, res, next) => {

@@ -136,6 +136,8 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 2) Verification token
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  //throws an error if verification fails, which then will be handled in the errorController
+
   // console.log(decoded);
 
   // 3) Check if user still exists,(user may have been deleted)
@@ -158,6 +160,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 // Only for rendered pages, no errors!
+// add user to res.locals, so that it can be used in pug files
 exports.isLoggedIn = async (req, res, next) => {
   // 1) Getting token and check of it's there
   if (req.cookies.jwt) {
@@ -192,6 +195,8 @@ exports.isLoggedIn = async (req, res, next) => {
 
 //happends after protection
 exports.restrictTo = (...roles) => {
+
+  //express middleware only takes req, res, next as parameters thus we are returning a function
   return (req, res, next) => {
     //has access to roles cause, closures: roles['admin', 'lead-guide'] req.user.role='user'
     if (!roles.includes(req.user.role)) {
@@ -212,6 +217,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   // 2) Generate the random reset token
   const resetToken = user.createPasswordReset();
+  //as we are not adding the required fields such as email & pass turn validateBeforeSave off
   await user.save({ validateBeforeSave: false });
 
   // 3) Send it to user's email

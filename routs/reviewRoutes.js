@@ -19,9 +19,11 @@ router
   .post(authController.restrictTo('user'), reviewController.setTourUserIds, reviewController.createReview);
 
 // api/v1/reviews/:id = /:id
+// also works for: api/v1/tours/:tourId/reviews/:id /
 router
   .route('/:id')
   .get(reviewController.getReview)
+  //problem arises as anybody can update or delete any review even ones posted from different users
   .patch(authController.restrictTo('admin', 'user'), reviewController.updateReview)
   .delete(authController.restrictTo('admin', 'user'), reviewController.deleteReview);
 

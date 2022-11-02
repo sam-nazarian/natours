@@ -135,9 +135,10 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+//indexes makes getting results faster
 tourSchema.index({ price: 1, ratingsAverage: -1 }); //'1':acsending, '2':descending
 tourSchema.index({ slug: 1 });
-tourSchema.index({ startLocation: '2dsphere' });
+tourSchema.index({ startLocation: '2dsphere' }); //allows geospatial queries for startLocation
 
 //return is <<VirtualType>> obj, use get() on it
 //VirtualType.prototype.get()
@@ -217,8 +218,11 @@ tourSchema.pre('aggregate', function(next) {
   // console.log(this.__proto__.pipeline.toString()); // see if function pipeline exists
   // console.log(this.__proto__);
 
-  // Hide secret tours if geoNear is NOT used
+  // Hide secret tours in aggregation pipeline if geoNear is NOT used as 1st pipeline
+  // essential as geoNear needs to be 1st item listed in an aggregation pipeline otherwise it won't work
   if (!(this.pipeline().length > 0 && '$geoNear' in this.pipeline()[0])) {
+
+    //add to beginning of aggregation pipeline
     this.pipeline().unshift({
       $match: { secretTour: { $ne: true } }
     });

@@ -16,6 +16,7 @@ const filterObj = (bodyObj, ...allowedFields) => {
   //allowFields becomes an array
   Object.keys(bodyObj).forEach((el) => {
     if (allowedFields.includes(el)) {
+      //if key is not found create key, if key is found get value
       newObj[el] = bodyObj[el];
       // key     = value
     }
@@ -65,6 +66,8 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
+
+// Set param id as the factory function wouldn't work without it
 exports.getMe = (req, res, next) => {
   req.params.id = req.user.id;
   next();

@@ -5,6 +5,7 @@ const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
 
 exports.alias = (req, res, next) => {
+  //req.query is url's querys
   req.query.limit = 5;
   req.query.sort = '-ratingsAverage price';
   req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
@@ -61,12 +62,14 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
 //startDates in a certain year
 exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   // try {
-  const year = req.params.year;
+  const year = req.params.year * 1;
 
   const plan = await Tour.aggregate([
     {
+      //deconstructs an array field from the info documents and then output one document for each element of the array.
       $unwind: '$startDates'
     },
+    // match is like filter
     {
       $match: {
         startDates: {
@@ -76,18 +79,21 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
       }
     },
     {
+      //columns that the match will have
       $group: {
-        _id: { $month: '$startDates' },
+        _id: { $month: '$startDates' }, //groups data that have the same month
         numTourStarts: { $sum: 1 },
-        tours: { $push: '$name' } //an array
+        tours: { $push: '$name' } //an array (specify 2 or more tours in 1 field)
       }
     },
+    // adding a field with _id value to change original name of ID
     {
       $addFields: { month: '$_id' } //field 'month' with value of '$_id'
     },
+    // hiding the value ID, as we added it with a different name above
     {
       $project: {
-        _id: 0 //hiding _id
+        _id: 0 //hiding _id (0 is hiding, 1 is showing)
       }
     },
     {
@@ -112,21 +118,22 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
   // }
 });
 
-// /tours-within/233/center/-40,35/unit/mi
-// /tours-distance?distance=233&center=-40,45&unit=mi //another way
+// /tours-within/233/center/-40,35/unit/mi|km
+// /tours-within?distance=233&center=-40,45&unit=mi //another way
 exports.getToursWithin = catchAsync(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
   const [lat, lng] = latlng.split(',');
 
-  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1; //convert to radians unit
 
   if (!lat || !lng) {
-    next(new AppError('Please provide latitutr and longitude in the format lat,lng.', 400));
+    next(new AppError('Please provide latitude and longitude in the format lat,lng.', 400));
   }
 
   console.log(distance, lat, lng, unit);
 
   const tours = await Tour.find({
+    //geoWithin finds documents between a geometry
     startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } }
   });
 
@@ -154,7 +161,10 @@ exports.getDistances = catchAsync(async (req, res, next) => {
 
   const distances = await Tour.aggregate([
     {
-      //geoNear must be first stage in aggregation pipeline
+      // for geospatial aggregation geoNear must be first stage in aggregation pipeline
+      // needs to have golocation index for it to work, by default uses the only geolocation index (so here it's startLocation)
+      // distance between startLocation & given coordinate(by user)
+      // results will automatically be sorted by distance in asc
       $geoNear: {
         near: {
           type: 'Point',

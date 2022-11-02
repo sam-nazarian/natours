@@ -28,7 +28,7 @@ const reviews = JSON.parse(fs.readFileSync(`${__dirname}/reviews.json`, 'utf-8')
 const insertData = async () => {
   try {
     await Tour.create(tours);
-    await User.create(users, { validateBeforeSave: false });
+    await User.create(users, { validateBeforeSave: false }); //validateBeforeSave, so that the passwords won't get encrypted, as they already are encrypted
     await Review.create(reviews);
     console.log('Data successfully loaded!');
   } catch (err) {

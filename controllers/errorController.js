@@ -23,7 +23,7 @@ const handleJWTError = () => {
 };
 
 const handleJWTExpiredError = () => {
-  const message = 'You token has expired! Please log in again.';
+  const message = 'Your token has expired! Please log in again.';
   return new AppError(message, 401);
 };
 
@@ -71,18 +71,26 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     let error = Object.assign(err); //deep copy err
 
+    //if the err is one of the ones below, then the error is operational, so change the error to an operational error with a new message
+
+    //mongoDB when invalid id or value was sent (usually the case with Ids)
     if (error.name === 'CastError') {
       error = handleCastErrorDB(error);
     }
+    //mongoDB duplicate value error
     if (error.code === 11000) {
       error = handleDuplicateFieldsDB(error);
     }
+    //mongoDB validation fails
     if (error.name === 'ValidationError') {
       error = handleValidationErrorDB(error);
     }
+    // when the user has an invalid token which is caused by the user modifying the token
+    // happens when JWT verify fails in authController.protect
     if (error.name === 'JsonWebTokenError') {
       error = handleJWTError();
     }
+    // if verification of token in authController.protect fails due to token being expired
     if (error.name === 'TokenExpiredError') {
       error = handleJWTExpiredError();
     }
