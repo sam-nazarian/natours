@@ -20,7 +20,7 @@ exports.getOverview = catchAsync(async (req, res, next) => {
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findOne({ slug: req.params.slug }).populate({
     path: 'reviews',
-    fields: 'review rating user', //specifying these fields to show
+    fields: 'review rating user' //specifying these fields to show
 
     // user gets access to id, name, & photo of user as reviews populates user
     // since there's a populate on the reviewModel below is not necessarly
