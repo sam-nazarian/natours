@@ -1,4 +1,5 @@
 /* eslint-disable */
+import mapboxgl from 'mapbox-gl';
 
 export const displayMap = (locations) => {
   // pk.eyJ1Ijoic2FtYW4yMTExIiwiYSI6ImNsMHR2eGh0ZTAwbXkzYm56ODZnbjE4MTAifQ.J0W78Gpf44Rm8Wq7QMUDUQ
@@ -26,7 +27,7 @@ export const displayMap = (locations) => {
       element: el, //DOM element used as a marker
       anchor: 'bottom'
     })
-      .setLngLat(loc.coordinates)
+      .setLngLat(loc.coordinates) // takes an array
       .addTo(map);
 
     //Add popup
@@ -43,7 +44,7 @@ export const displayMap = (locations) => {
 
   // map.fitBounds(bounds);
 
-  //function that executes moving & zooming
+  //function that executes moving & zooming, based on the bounds which was edited in for-loop above
   map.fitBounds(bounds, {
     padding: {
       top: 200,
