@@ -50,6 +50,9 @@ middleware is a step the requests go through. data from the 'body' is added to t
 // Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //body must be under 10kb
 
+// the way a form sends data to the user is Urlencoded, need this to access data of form
+app.use(express.urlencoded({ extended: true, limit: '10kb' })); //extended allows to send more complex data
+
 //parsers data from cookie
 app.use(cookieParser());
 // Data sanitization against NoSQL query injection

@@ -1,4 +1,5 @@
 const Tour = require('../models/tourModel');
+const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 
@@ -16,6 +17,7 @@ exports.getOverview = catchAsync(async (req, res, next) => {
   });
 });
 
+//use next to send error to errorHandling middleware
 //always add next for async functions
 exports.getTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findOne({ slug: req.params.slug }).populate({
@@ -53,3 +55,25 @@ exports.getAccount = (req, res) => {
     title: `Your account`
   });
 };
+
+// use this if you don't have an api
+// if an error occurs it goes to errorHandling middleware
+exports.updateUserData = catchAsync(async (req, res, next) => {
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user.id,
+    {
+      name: req.body.name,
+      email: req.body.email
+    },
+    {
+      new: true,
+      runValidators: true
+    }
+  );
+
+  // doesn't redirect to new url, just renders account page
+  res.status(200).render('account', {
+    title: `Your account`,
+    user: updatedUser //update the user which was given by the protect middleware
+  });
+});
