@@ -124,7 +124,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
     //jwt in cookie, this will be used for testing in browser, jwt because we made a cookie named jwt when logging in
     //we need cookie-parser to get cookies from browser, but not to write cookies
-  } else if (req.cookies.jwt) {
+  } else if (req.cookies.jwt && req.cookies.jwt !== 'loggedout') {
     //authenticate users send by cookies & not only via authorization header
     token = req.cookies.jwt;
   }
@@ -155,6 +155,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = freshUser; //might be usefull in future
+  res.locals.user = freshUser;
   // console.log(req.user);
   next();
 });
@@ -195,7 +196,6 @@ exports.isLoggedIn = async (req, res, next) => {
 
 //happends after protection
 exports.restrictTo = (...roles) => {
-
   //express middleware only takes req, res, next as parameters thus we are returning a function
   return (req, res, next) => {
     //has access to roles cause, closures: roles['admin', 'lead-guide'] req.user.role='user'
