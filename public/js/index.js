@@ -36,9 +36,15 @@ if (logOutBtn) {
 if (userDataForm) {
   userDataForm.addEventListener('submit', (e) => {
     e.preventDefault(); //prevent form from being submitted
-    const name = document.getElementById('name').value; //can only get values after form was submitted
-    const email = document.getElementById('email').value;
-    updateSettings({ name, email }, 'data');
+
+    //recreating multi-part form data
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    console.log(form);
+
+    updateSettings(form, 'data'); //ajax call will recognise this file as an object
   });
 }
 

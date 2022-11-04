@@ -29,7 +29,7 @@ const multerFilter = (req, file, cb) => {
 
 const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 
-//name of field that will hold the file is photo & will be only having a single photo
+//name of field in html that will hold the file is photo & will be only having a single photo
 exports.uploadUserPhoto = upload.single('photo');
 
 exports.resizeUserPhoto = (req, res, next) => {
