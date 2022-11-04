@@ -56,8 +56,8 @@ exports.createUser = (req, res) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
-  console.log('req.file: ', req.file);
-  console.log('req.body: ', req.body);
+  // console.log('req.file: ', req.file);
+  // console.log('req.body: ', req.body);
 
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
@@ -66,6 +66,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
   // 2) Filtered out unwanted fields name that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.filename;
   // console.log(filteredBody);
 
   // 3) update user document
