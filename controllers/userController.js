@@ -1,10 +1,10 @@
 const multer = require('multer');
+const sharp = require('sharp');
 const User = require('./../models/userModel'); //User is a Collection
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
-const sharp = require('sharp');
 
 // const multerStorage = multer.diskStorage({
 //   destination: (req, file, cb) => {

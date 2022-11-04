@@ -16,7 +16,7 @@ router.use('/:tourId/reviews', reviewRouter); //for this route usse review route
 router.route('/top-5-cheap').get(tourController.alias, tourController.getAllTours); //middleware here
 router.route('/tour-stats').get(tourController.getTourStats);
 router.route('/monthly-plan/:year').get(authController.protect, authController.restrictTo('admin', 'lead-guide', 'guide'), tourController.getMonthlyPlan);
- 
+
 //TOUR ROUTES
 router
   .route('/')
@@ -26,7 +26,7 @@ router
 router
   .route('/:id')
   .get(tourController.getTour)
-  .patch(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.updateTour)
+  .patch(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.uploadTourImages, tourController.resizeTourImages, tourController.updateTour)
   .delete(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.deleteTour);
 
 // /tours-within/233/center/-40,35/unit/mi
