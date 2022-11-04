@@ -39,6 +39,7 @@
     "npm": "^8.5.5",
     "pug": "^3.0.2",
     "regenerator-runtime": "^0.13.9",
+    "sharp": "^0.31.2",
     "slugify": "^1.6.5",
     "validator": "^13.7.0",
     "xss-clean": "^0.1.1"
