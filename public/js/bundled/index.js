@@ -151,6 +151,7 @@ const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
+const userPasswordForm = document.querySelector('.form-user-password');
 // DELEGATIONS
 if (mapBox) {
     // whatever we put into a data attribute like this (data-locations=''), will then get stored into the dataset property,
@@ -169,29 +170,45 @@ if (userDataForm) userDataForm.addEventListener('submit', (e)=>{
     e.preventDefault(); //prevent form from being submitted
     const name = document.getElementById('name').value; //can only get values after form was submitted
     const email = document.getElementById('email').value;
-    _updateSettingsJs.updateData(name, email);
+    _updateSettingsJs.updateSettings({
+        name,
+        email
+    }, 'data');
+});
+if (userPasswordForm) userPasswordForm.addEventListener('submit', async (e)=>{
+    e.preventDefault(); //prevent form from being submitted
+    document.querySelector('.btn--save-password').textContent = 'Updating...'; //only forms have the value property on them, not all html elms
+    const passwordCurrent = document.getElementById('password-current').value; //can only get values after form was submitted
+    const password = document.getElementById('password').value;
+    const passwordConfirm = document.getElementById('password-confirm').value;
+    await _updateSettingsJs.updateSettings({
+        passwordCurrent,
+        password,
+        passwordConfirm
+    }, 'password');
+    document.querySelector('.btn--save-password').textContent = 'Save password';
+    document.getElementById('password-current').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('password-confirm').value = '';
 });
 
 },{"./updateSettings.js":"l3cGY","./mapbox.js":"3zDlz","./login.js":"7yHem"}],"l3cGY":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "updateData", ()=>updateData
+parcelHelpers.export(exports, "updateSettings", ()=>updateSettings
 );
 var _alerts = require("./alerts");
-// import axios from 'axios';
 const axios = require('axios'); //both import & require work
-const updateData = async function(name, email) {
+const updateSettings = async function(data, type) {
     try {
+        const url = type === 'password' ? 'http://127.0.0.1:3000/api/v1/users/updateMyPassword' : 'http://127.0.0.1:3000/api/v1/users/updateMe';
         const res = await axios({
             method: 'PATCH',
-            url: 'http://127.0.0.1:3000/api/v1/users/updateMe',
-            data: {
-                name: name,
-                email: email
-            }
+            url,
+            data
         });
         //res has an object called data, all data's from api are hold there
-        if (res.data.status === 'success') _alerts.showAlert('success', 'Data updated successfully!');
+        if (res.data.status === 'success') _alerts.showAlert('success', `${type.toUpperCase()} updated successfully!`);
     } catch (err) {
         _alerts.showAlert('error', err.response.data.message); //accessing message property from server
     }

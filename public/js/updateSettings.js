@@ -1,21 +1,21 @@
 import { showAlert } from './alerts';
-// import axios from 'axios';
 const axios = require('axios'); //both import & require work
+// import axios from 'axios';
 
-export const updateData = async function(name, email) {
+// type is either 'password' or 'data'
+export const updateSettings = async function(data, type) {
   try {
+    const url = type === 'password' ? 'http://127.0.0.1:3000/api/v1/users/updateMyPassword' : 'http://127.0.0.1:3000/api/v1/users/updateMe';
+
     const res = await axios({
       method: 'PATCH',
-      url: 'http://127.0.0.1:3000/api/v1/users/updateMe',
-      data: {
-        name: name,
-        email: email
-      }
+      url,
+      data
     });
 
     //res has an object called data, all data's from api are hold there
     if (res.data.status === 'success') {
-      showAlert('success', 'Data updated successfully!');
+      showAlert('success', `${type.toUpperCase()} updated successfully!`);
 
       // no need to reload as user already changed value to updated value
       // location.assign('/me');
