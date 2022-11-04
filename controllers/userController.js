@@ -1,8 +1,31 @@
+const multer = require('multer');
 const User = require('./../models/userModel'); //User is a Collection
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
-const appError = require('./../utils/appError');
+const AppError = require('./../utils/appError');
 const factory = require('./handlerFactory');
+
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public/img/users');
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split('/')[1];
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  }
+});
+
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please upload only images.', 400), false);
+  }
+};
+
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+exports.uploadUserPhoto = upload.single('photo');
 
 /**
  * see if values are available in the object
@@ -33,14 +56,17 @@ exports.createUser = (req, res) => {
 };
 
 exports.updateMe = catchAsync(async (req, res, next) => {
+  console.log('req.file: ', req.file);
+  console.log('req.body: ', req.body);
+
   // 1) Create error if user POSTs password data
   if (req.body.password || req.body.passwordConfirm) {
-    return next(new appError(`This route is not for password updates. Please use /updateMyPassword`, 400));
+    return next(new AppError(`This route is not for password updates. Please use /updateMyPassword`, 400));
   }
 
   // 2) Filtered out unwanted fields name that are not allowed to be updated
   const filteredBody = filterObj(req.body, 'name', 'email');
-  console.log(filteredBody);
+  // console.log(filteredBody);
 
   // 3) update user document
   const updateUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
@@ -65,7 +91,6 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     data: null
   });
 });
-
 
 // Set param id as the factory function wouldn't work without it
 exports.getMe = (req, res, next) => {
