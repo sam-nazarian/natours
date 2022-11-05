@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
-const sendEmail = require('./../utils/email');
+const Email = require('./../utils/email');
 const crypto = require('crypto');
 
 /**
@@ -59,6 +59,10 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm
     // passwordChangedAt: req.body.passwordChangedAt
   });
+
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  // console.log(url);
+  await new Email(newUser, url).sendWelcome();
 
   // const token = signToken(newUser._id);
 
@@ -227,11 +231,13 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   try {
     //all async funcs are promises
+    /*
     await sendEmail({
       email: user.email,
       subject: 'Your password reset token (valid for 10 min)',
       message
     });
+    */
 
     res.status(200).json({
       status: 'success',
