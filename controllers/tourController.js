@@ -27,10 +27,40 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 //for multiple uploads, with many fields
 exports.uploadTourImages = upload.fields([{ name: 'imageCover', maxCount: 1 }, { name: 'images', maxCount: 3 }]); //req.files
 
-exports.resizeTourImages = (req, res, next) => {
-  console.log(req.files);
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
+  // console.log(req.files);
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // 1: Cover image
+  //on database field is called imageCover
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // 2: Images
+  req.body.images = [];
+
+  //async callback function returns a promise, which then would need to be awaited
+  await Promise.all(
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${i + 1}.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+
+      req.body.images.push(filename);
+    })
+  );
+
+  console.log(req.body);
   next();
-};
+});
 
 exports.alias = (req, res, next) => {
   //req.query is url's querys

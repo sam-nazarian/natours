@@ -32,21 +32,21 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 //name of field in html that will hold the file is photo & will be only having a single photo
 exports.uploadUserPhoto = upload.single('photo');
 
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
   //as we used buffer in memory it din't add a name to the file
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
 
   //image processing
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
     .toFile(`public/img/users/${req.file.filename}`);
 
   next();
-};
+});
 
 /**
  * see if values are available in the object
