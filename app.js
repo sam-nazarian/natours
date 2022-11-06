@@ -14,6 +14,7 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 var cookieParser = require('cookie-parser');
 const reviewRouter = require('./routs/reviewRoutes');
+const bookingRouter = require('./routs/bookingRoutes');
 const viewRouter = require('./routs/viewRoutes');
 
 app.set('view engine', 'pug'); //defining template engine
@@ -91,6 +92,7 @@ app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter); //this middleware only happens in this url, (we call this mounting)
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 app.all('*', (req, res, next) => {
   /*   res.status(404).json({
