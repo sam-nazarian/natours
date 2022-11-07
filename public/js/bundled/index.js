@@ -146,12 +146,14 @@
 var _mapboxJs = require("./mapbox.js");
 var _loginJs = require("./login.js");
 var _updateSettingsJs = require("./updateSettings.js");
+var _stripe = require("./stripe");
 //DOM ELEMENTS
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
+const bookBtn = document.getElementById('book-tour');
 // DELEGATIONS
 if (mapBox) {
     // whatever we put into a data attribute like this (data-locations=''), will then get stored into the dataset property,
@@ -192,8 +194,14 @@ if (userPasswordForm) userPasswordForm.addEventListener('submit', async (e)=>{
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
 });
+if (bookBtn) bookBtn.addEventListener('click', (e)=>{
+    //e.target is the elm that caused the event to be activated/clicked
+    e.target.textContent = 'Processing...';
+    const { tourId  } = e.target.dataset;
+    _stripe.bookTour(tourId);
+});
 
-},{"./mapbox.js":"3zDlz","./login.js":"7yHem","./updateSettings.js":"l3cGY"}],"3zDlz":[function(require,module,exports) {
+},{"./mapbox.js":"3zDlz","./login.js":"7yHem","./updateSettings.js":"l3cGY","./stripe":"10tSC"}],"3zDlz":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "displayMap", ()=>displayMap
@@ -31018,6 +31026,30 @@ const updateSettings = async function(data, type) {
     }
 };
 
-},{"./alerts":"6Mcnf","axios":"jo6P5","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["f2QDv"], "f2QDv", "parcelRequire11c7")
+},{"./alerts":"6Mcnf","axios":"jo6P5","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"10tSC":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "bookTour", ()=>bookTour
+);
+var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
+var _alerts = require("./alerts");
+const bookTour = async (tourId)=>{
+    try {
+        const stripe = Stripe('pk_test_51M0zeBBFhHzpgYFyUL2fdbgiIOcSEuvdUzNaRmw23JxiYf0Xs7Kcw4vyTx83FKKkCzNQqUywNXn4jh0hoLP4Z6IB00FvPJkJfj');
+        // 1) Get checkout session from API
+        const session = await _axiosDefault.default(`http://127.0.0.1:3000/api/v1/bookings/checkout-session/${tourId}`);
+        // console.log(session);
+        // 2) Create checkout form + charge credit card
+        await stripe.redirectToCheckout({
+            sessionId: session.data.session.id
+        });
+    } catch (err) {
+        console.log(err);
+        _alerts.showAlert('error', err);
+    }
+};
+
+},{"axios":"jo6P5","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./alerts":"6Mcnf"}]},["f2QDv"], "f2QDv", "parcelRequire11c7")
 
 //# sourceMappingURL=index.js.map
