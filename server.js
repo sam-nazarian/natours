@@ -2,8 +2,8 @@
 // if there's an err in an express middleware then it doesn't go here, it goes to the express error handling middleware (which has 4 parameters, (err, req, res, next) )
 // for unhandled synchronous errors, works on errors in sync functions
 process.on('uncaughtException', (err) => {
-  console.log(err.name, err);
   console.log('UNCAUGHT REJECTION! 💥 Shutting down...');
+  console.log(err.name, err);
   //since these errors happen async, they have nothing to do with the server, so no need to close the server
   process.exit(1); //0 is success, 1 is uncaught exeption
 });
@@ -36,8 +36,8 @@ const server = app.listen(port, () => {
 
 //for unhandled async errors such as promises or errors in async functions
 process.on('unhandledRejection', (err) => {
-  console.log(err.name, err);
   console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+  console.log(err.name, err);
 
   //shutdown gracefully (wait until all current/pending requests are finished), only then after kill the server
   server.close(() => {

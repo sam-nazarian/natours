@@ -13,7 +13,7 @@ export const displayMap = (locations) => {
     // interactive: false
   });
 
-  console.log(locations);
+  // console.log(locations);
 
   const bounds = new mapboxgl.LngLatBounds();
 

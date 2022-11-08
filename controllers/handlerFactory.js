@@ -104,7 +104,6 @@ exports.getAll = (Model) => {
     //check if url has tourId 'api/v1/tours/:tourId/reviews'
     if (req.params.tourId) filter = { tour: req.params.tourId }; //tour value in schema match tourId
 
-    console.log(req.query);
     // EXECUTE QUERY
     // console.log(req.query);
     const features = new APIFeatures(Model.find(filter), req.query)

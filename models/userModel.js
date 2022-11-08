@@ -117,7 +117,7 @@ userSchema.methods.createPasswordReset = function() {
     .update(resetToken) //string to be encripted
     .digest('hex'); //store as hex
 
-  console.log({ resetToken }, this.passwordResetToken);
+  // console.log({ resetToken }, this.passwordResetToken);
 
   this.passwordResetExpires = Date.now() + 30 * 60 * 1000; //after 30 minutes
 

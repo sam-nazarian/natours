@@ -57,7 +57,7 @@ exports.resizeTourImages = catchAsync(async (req, res, next) => {
     })
   );
 
-  console.log(req.body);
+  // console.log(req.body);
   next();
 });
 
@@ -187,7 +187,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
     next(new AppError('Please provide latitude and longitude in the format lat,lng.', 400));
   }
 
-  console.log(distance, lat, lng, unit);
+  // console.log(distance, lat, lng, unit);
 
   const tours = await Tour.find({
     //geoWithin finds documents between a geometry

@@ -12,7 +12,9 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
-var cookieParser = require('cookie-parser');
+const cookieParser = require('cookie-parser');
+const compression = require('compression'); //compress response texts
+
 const reviewRouter = require('./routs/reviewRoutes');
 const bookingRouter = require('./routs/bookingRoutes');
 const viewRouter = require('./routs/viewRoutes');
@@ -76,6 +78,10 @@ app.use((req, res, next) => {
   next();
 });
  */
+
+// compression() is a middleware function, compresses text sent to clients
+app.use(compression());
+
 //Test middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();

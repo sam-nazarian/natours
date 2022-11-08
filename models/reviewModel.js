@@ -63,7 +63,8 @@ reviewSchema.statics.calcAverageRatings = async function(tourId) {
     {
       $match: { tour: tourId } //select the tour that user updated
     },
-    { //columns that the match will have
+    {
+      //columns that the match will have
       $group: {
         _id: '$tour',
         nRating: { $sum: 1 }, //for each review 1 will be added
@@ -71,7 +72,7 @@ reviewSchema.statics.calcAverageRatings = async function(tourId) {
       }
     }
   ]);
-  console.log(stats);
+  // console.log(stats);
 
   //don't need it, no need to put it in var
   if (stats.length > 0) {
@@ -105,7 +106,7 @@ reviewSchema.post('save', function() {
 reviewSchema.pre(/^findOneAnd/, async function(next) {
   //'this' points to current query, only save points to current document
   this.r = await this.findOne(); //returns document & stores in query's object
-  console.log(this.r);
+  // console.log(this.r);
 
   next();
 });

@@ -190,14 +190,16 @@ tourSchema.pre(/^find/, function(next) {
   next();
 });
 
+/*
 tourSchema.post(/^find/, function(docs, next) {
-  console.log(`Query took: ${Date.now() - this.start} milliseconds`);
+  // console.log(`Query took: ${Date.now() - this.start} milliseconds`);
   // console.log('BELOW IS DOCS:');
   // console.log(docs);
   // console.log('BELOW IS THIS:');
   // console.log(this);
   next();
 });
+*/
 
 //also works for find by id
 tourSchema.pre(/^find/, function(next) {
@@ -221,7 +223,6 @@ tourSchema.pre('aggregate', function(next) {
   // Hide secret tours in aggregation pipeline if geoNear is NOT used as 1st pipeline
   // essential as geoNear needs to be 1st item listed in an aggregation pipeline otherwise it won't work
   if (!(this.pipeline().length > 0 && '$geoNear' in this.pipeline()[0])) {
-
     //add to beginning of aggregation pipeline
     this.pipeline().unshift({
       $match: { secretTour: { $ne: true } }
