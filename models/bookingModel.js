@@ -21,7 +21,7 @@ const bookingSchema = new mongoose.Schema({
   },
   // incase the customer decides to pay in cash an administer is supposed to enter this data (booking done outside of Stripe)
   paid: {
-    type: boolean,
+    type: Boolean,
     default: true
   }
 });
