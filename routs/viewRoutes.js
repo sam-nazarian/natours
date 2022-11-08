@@ -14,6 +14,8 @@ router.get('/login', authController.isLoggedIn, viewsController.getLoginForm);
 
 //in protect it will give an error if the user is logged in
 router.get('/me', authController.protect, viewsController.getAccount);
+router.get('/my-tours', authController.protect, viewsController.getMyTours);
+
 router.post('/submit-user-data', authController.protect, viewsController.updateUserData);
 
 module.exports = router;
