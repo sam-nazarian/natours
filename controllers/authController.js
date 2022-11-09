@@ -22,16 +22,16 @@ const signToken = (id) => {
  * @param {*} statusCode
  * @param {*} res
  */
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
   //cookie here has nothing to do with cookie-parser
   const cookieOptions = {
     expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-    // secure: true, //HTTPS
-    httpOnly: true //cookie can't be accesed or modiefied by browser
+    httpOnly: true, //cookie can't be accesed or modiefied by browser
+    // secure means that cookie can only be sent on a secure (HTTPS) connection
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https' //turn secure on if heroku is using HTTPS
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; //add secure=true to cookieOptions
 
   //send token to cookie with these options
   res.cookie('jwt', token, cookieOptions);
@@ -67,7 +67,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // const token = signToken(newUser._id);
 
   //sending token to client, immediately logging user
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
   // res.status(201).json({
   //   status: 'success',
   //   token,
@@ -100,7 +100,7 @@ exports.login = catchAsync(async (req, res, next) => {
   // 3) If everything ok, send token to client
   // const token = signToken(user._id);
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 
   // console.log(token);
 
@@ -275,7 +275,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // 3) Update changedPasswordAt property for the user
   // 4) Log the user in, send JWT
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 
   // const token = signToken(user._id);
 
@@ -300,7 +300,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   await dbUser.save();
 
   // 4) Log user in, send JWT
-  createSendToken(dbUser, 200, res);
+  createSendToken(dbUser, 200, req, res);
   // const token = signToken(dbUser._id);
 
   // res.status(200).json({

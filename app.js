@@ -27,6 +27,9 @@ app.set('views', path.join(__dirname, 'views')); //we don't know if given path w
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static(`${__dirname}/public`));
 
+// proxies redirect & modify incoming requests
+app.enable('trust proxy'); // trusts heroku which acts as a proxy
+
 // Set Security HTTP headers
 app.use(helmet());
 
