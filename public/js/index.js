@@ -14,6 +14,8 @@ const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
 const bookBtn = document.getElementById('book-tour');
 
+console.log('Welcome');
+
 // DELEGATIONS
 if (mapBox) {
   // whatever we put into a data attribute like this (data-locations=''), will then get stored into the dataset property,

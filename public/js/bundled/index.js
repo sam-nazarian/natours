@@ -154,6 +154,7 @@ const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
 const bookBtn = document.getElementById('book-tour');
+console.log('Welcome');
 // DELEGATIONS
 if (mapBox) {
     // whatever we put into a data attribute like this (data-locations=''), will then get stored into the dataset property,
@@ -31010,11 +31011,13 @@ parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "updateSettings", ()=>updateSettings
 );
 var _alerts = require("./alerts");
-const axios = require('axios'); //both import & require work
+// const axios = require('axios'); //both import & require work
+var _axios = require("axios");
+var _axiosDefault = parcelHelpers.interopDefault(_axios);
 const updateSettings = async function(data, type) {
     try {
         const url = type === 'password' ? '/api/v1/users/updateMyPassword' : '/api/v1/users/updateMe';
-        const res = await axios({
+        const res = await _axiosDefault.default({
             method: 'PATCH',
             url,
             data
@@ -31026,7 +31029,7 @@ const updateSettings = async function(data, type) {
     }
 };
 
-},{"./alerts":"6Mcnf","axios":"jo6P5","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"10tSC":[function(require,module,exports) {
+},{"./alerts":"6Mcnf","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","axios":"jo6P5"}],"10tSC":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "bookTour", ()=>bookTour
