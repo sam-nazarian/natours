@@ -14,9 +14,9 @@ const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression'); //compress response texts
 const cors = require('cors');
-
 const reviewRouter = require('./routs/reviewRoutes');
 const bookingRouter = require('./routs/bookingRoutes');
+const bookingController = require('./controllers/bookingController');
 const viewRouter = require('./routs/viewRoutes');
 
 const app = express();
@@ -68,6 +68,8 @@ const limiter = rateLimit({
 
 // Limit requests from same API
 app.use('/api', limiter); // effects routes starts with api
+
+app.post('/webhook-checkout', express.raw({ tyep: 'application/json' }), bookingController.webhookCheckout);
 
 /* 
 middleware, is a function that modifies the incoming request data,
