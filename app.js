@@ -69,7 +69,7 @@ const limiter = rateLimit({
 // Limit requests from same API
 app.use('/api', limiter); // effects routes starts with api
 
-app.post('/webhook-checkout', express.raw({ tyep: 'application/json' }), bookingController.webhookCheckout);
+app.post('/webhook-checkout', express.raw({ type: 'application/json' }), bookingController.webhookCheckout);
 
 /* 
 middleware, is a function that modifies the incoming request data,
