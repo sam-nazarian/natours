@@ -11,9 +11,9 @@ export const hideAlert = () => {
  * @param {string} type can be 'error' or 'success' as it's refered to in css
  * @param {string} msg massage of popup
  */
-export const showAlert = (type, msg) => {
+export const showAlert = (type, msg, time = 7) => {
   hideAlert(); //hide elm that already exist, incase prev elm didn't disapear in time
   const markup = `<div class="alert alert--${type}">${msg}</div>`;
   document.querySelector('body').insertAdjacentHTML('afterbegin', markup); //inside of the body, but right at the beginning
-  window.setTimeout(hideAlert, 5000); //hide alert after 0.5 sec
+  window.setTimeout(hideAlert, time * 1000); //hide alert after 0.5 sec
 };

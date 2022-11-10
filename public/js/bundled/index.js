@@ -147,6 +147,7 @@ var _mapboxJs = require("./mapbox.js");
 var _loginJs = require("./login.js");
 var _updateSettingsJs = require("./updateSettings.js");
 var _stripe = require("./stripe");
+var _alerts = require("./alerts");
 //DOM ELEMENTS
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
@@ -200,8 +201,10 @@ if (bookBtn) bookBtn.addEventListener('click', (e)=>{
     const { tourId  } = e.target.dataset;
     _stripe.bookTour(tourId);
 });
+const alertMessage = document.querySelector('body').dataset.alert;
+if (alertMessage) _alerts.showAlert('success', alertMessage, 20);
 
-},{"./mapbox.js":"3zDlz","./login.js":"7yHem","./updateSettings.js":"l3cGY","./stripe":"10tSC"}],"3zDlz":[function(require,module,exports) {
+},{"./mapbox.js":"3zDlz","./login.js":"7yHem","./updateSettings.js":"l3cGY","./stripe":"10tSC","./alerts":"6Mcnf"}],"3zDlz":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "displayMap", ()=>displayMap
@@ -30997,11 +31000,11 @@ const hideAlert = ()=>{
     // if (el) el.parentElement.removeChild(el);
     if (el) el.remove();
 };
-const showAlert = (type, msg)=>{
+const showAlert = (type, msg, time = 7)=>{
     hideAlert(); //hide elm that already exist, incase prev elm didn't disapear in time
     const markup = `<div class="alert alert--${type}">${msg}</div>`;
     document.querySelector('body').insertAdjacentHTML('afterbegin', markup); //inside of the body, but right at the beginning
-    window.setTimeout(hideAlert, 5000); //hide alert after 0.5 sec
+    window.setTimeout(hideAlert, time * 1000); //hide alert after 0.5 sec
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"l3cGY":[function(require,module,exports) {

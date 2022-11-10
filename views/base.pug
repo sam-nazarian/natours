@@ -12,7 +12,7 @@ html
     // HEADER
     include _header
 
-  body
+  body(data-alert=`${alert ? alert : ''}`)
     // CONTENT
     block content 
       h1 This is a placeholder heading
