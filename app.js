@@ -3,7 +3,6 @@ const path = require('path'); //core module
 const express = require('express');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
-const app = express();
 const morgan = require('morgan');
 const tourRouter = require('./routs/tourRoutes');
 const userRouter = require('./routs/userRoutes');
@@ -14,21 +13,42 @@ const xss = require('xss-clean');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 const compression = require('compression'); //compress response texts
+const cors = require('cors');
 
 const reviewRouter = require('./routs/reviewRoutes');
 const bookingRouter = require('./routs/bookingRoutes');
 const viewRouter = require('./routs/viewRoutes');
 
+const app = express();
+
+// proxies redirect & modify incoming requests
+app.enable('trust proxy'); // trusts heroku which acts as a proxy
+
 app.set('view engine', 'pug'); //defining template engine
 app.set('views', path.join(__dirname, 'views')); //we don't know if given path will have a '/' or notwe don't know if given path will have a '/' or not
 
 // 1) GLOBAL MIDDLEWARES
+//Implement CORS
+// Access-Control-Allow-Origin *
+app.use(cors());
+
+//api.natours.com, front-end natours.com
+/*
+app.use(
+  cors({
+    origin: 'https://www.natours.com' //only this origin could create requests
+  })
+);
+*/
+
+//similar to app.get or app.delete, it's not for settings options, it's an http method that we can respond to
+//allows complex requests (anything other than POST or GET is a complex request)
+app.options('*', cors()); //route is '*'. & the handler is on cors middleware
+// app.options('/api/v1/tours/:id', cors());
+
 // Serving static files
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use(express.static(`${__dirname}/public`));
-
-// proxies redirect & modify incoming requests
-app.enable('trust proxy'); // trusts heroku which acts as a proxy
 
 // Set Security HTTP headers
 app.use(helmet());
