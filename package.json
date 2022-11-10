@@ -15,8 +15,8 @@
     "import-data": "NODE_ENV=LOADER node ./dev-data/data/import-dev-data.js --import",
     "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
     "build:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
-    "build": "parcel build ./public/js/index.js --dist-dir ./public/js/bundled",
-    "watch": "parcel serve ./public/js/index.js --dist-dir ./public/js/bundled --no-hmr"
+    "build": "parcel build ./public/js/final.js --dist-dir ./public/js/bundled",
+    "watch": "parcel serve ./public/js/final.js --dist-dir ./public/js/bundled --no-hmr"
   },
   "author": "Saman Fathnazarian",
   "license": "ISC",
