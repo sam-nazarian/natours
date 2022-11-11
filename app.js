@@ -69,13 +69,14 @@ const limiter = rateLimit({
 // Limit requests from same API
 app.use('/api', limiter); // effects routes starts with api
 
+// Stripe.constructEvent() needs body to be in the raw form, (as stream, not JSON), thus route needs to be above express.json()
 app.post('/webhook-checkout', express.raw({ type: 'application/json' }), bookingController.webhookCheckout);
 
 /* 
 middleware, is a function that modifies the incoming request data,
 middleware is a step the requests go through. data from the 'body' is added to the request object
  */
-// Body Parser, reading data from body into req.body
+// Body Parser, reading data from body (converts it to json) then puts it into req.body as a json object
 app.use(express.json({ limit: '10kb' })); //body must be under 10kb
 
 // the way a form sends data to the user is Urlencoded, need this to access data of form
